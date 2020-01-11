@@ -15,6 +15,7 @@ mongoose.connect('mongodb+srv://Annette:'+ process.env.MONGO_ATLAS_PW + '@node-r
 });
 
 app.use(morgan('dev')); 
+app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 

@@ -2,13 +2,15 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-//import order object
+//import order  and product objects
 const Order = require('../models/order');
 const Product = require('../models/product');
 
+//Displays all orders stored in database
 router.get('/', (req, res, next) => {
     Order.find()
     .select('product quantity _id')
+    .populate('product', 'name')
     .exec()
     .then(docs => {
         res.status(200).json({
@@ -34,6 +36,7 @@ router.get('/', (req, res, next) => {
     
 });
 
+//Creates a new order
 router.post('/', (req, res, next) => {
     Product.findById(req.body.productId)
     .then(product => {
@@ -73,10 +76,12 @@ router.post('/', (req, res, next) => {
       });  
 });
 
+//Displays a given order
 router.get('/:orderId', (req, res, next) => {
     const id = req.params.orderId;
     Order.findById(id)
     .select('product quantity _id')
+    .populate('product')
     .exec()
     .then(order => {
         if(!order){
@@ -97,12 +102,10 @@ router.get('/:orderId', (req, res, next) => {
             error: err
         });
     });
-    /*res.status(200).json({
-        message: 'Order details',
-        orderId: req.params.orderId
-    });*/
+    
 });
 
+//Deletes a given order
 router.delete('/:orderId', (req, res, next) => {
     const id = req.params.orderId;
     Order.remove({_id: id})
@@ -123,11 +126,6 @@ router.delete('/:orderId', (req, res, next) => {
             error: err
         });
     });
- 
-    /*  res.status(200).json({
-        message: 'Order deleted',
-        orderId: req.params.orderId
-    });*/
 });
 
 module.exports = router;
